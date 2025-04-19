@@ -1,6 +1,6 @@
 // -------------- START OF CODE --------------
 // ==UserScript==
-// @name         DVDoom
+// @name         DVDoom8
 // @namespace    http://tampermonkey.net/
 // @version      6.0.0
 // @description  Changes in 6.0.0: 8chan support
@@ -181,7 +181,7 @@
             });
         }));
         // If successful use the regular url, otherwise use the proxy url.
-        return (false && catboxPing.status === 200) ? ((url) => url) : ((url) => url.replace("files.catbox.moe", "files.pixstash.moe"));
+        return (catboxPing.status === 200) ? ((url) => url) : ((url) => url.replace("files.catbox.moe", "files.pixstash.moe"));
     }();
 
     //////////////////////////////////////////////////////////////////
