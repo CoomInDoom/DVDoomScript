@@ -1,6 +1,6 @@
 // -------------- START OF CODE --------------
 // ==UserScript==
-// @name         DVDoom8
+// @name         DVDoom
 // @namespace    http://tampermonkey.net/
 // @version      6.0.0
 // @description  Changes in 6.0.0: 8chan support
