@@ -20,8 +20,8 @@
 // @connect      rentry.org
 // @connect      files.catbox.moe
 // @connect      files.pixstash.moe
-// @updateURL https://rentry.org/DVDoomSCRIPTchan/raw
-// @downloadURL https://rentry.org/DVDoomSCRIPT8chan/raw
+// @updateURL https://raw.githubusercontent.com/CoomInDoom/DVDoomScript/refs/heads/main/DVDoom.js
+// @downloadURL https://raw.githubusercontent.com/CoomInDoom/DVDoomScript/refs/heads/main/DVDoom.js
 // @require https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js
 // ==/UserScript==
 (async function () {
