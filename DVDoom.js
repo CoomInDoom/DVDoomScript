@@ -2,8 +2,8 @@
 // ==UserScript==
 // @name         DVDoom
 // @namespace    http://tampermonkey.net/
-// @version      6.0.0
-// @description  Changes in 6.0.0: 8chan support
+// @version      6.0.1
+// @description  Changes in 6.0.1: Radio color fix
 // @author       Seianon and Mimorianon and Reisanon
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @namespace    rccom
@@ -693,7 +693,7 @@
         drawerFooter.appendChild(eosButton);
         // Add the drawer to the document
         document.body.appendChild(drawer);
-        
+
         // Check if it's 4chanX.
         if (document.getElementById('shortcuts')) {
             const shortcuts = document.getElementById('shortcuts');
@@ -4835,7 +4835,7 @@
             syncColors() {
                 const htmlStyle = window.getComputedStyle(document.documentElement);
                 const bodyStyle = window.getComputedStyle(document.body);
-                const textColor = htmlStyle.color !== 'rgba(0, 0, 0, 0)' ? htmlStyle.color : bodyStyle.color;
+                const textColor = htmlStyle.color !== 'rgba(0, 0, 0, 0)' ? bodyStyle.color : htmlStyle.color;
                 const backgroundColor = htmlStyle.backgroundColor !== 'rgba(0, 0, 0, 0)' ? htmlStyle.backgroundColor : bodyStyle.backgroundColor;
                 const wrapper = document.querySelector('.video-controls-wrapper');
                 const controls = document.querySelector('.controls');
