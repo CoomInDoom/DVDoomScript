@@ -2,11 +2,12 @@
 // ==UserScript==
 // @name         DVDoom
 // @namespace    http://tampermonkey.net/
-// @version      6.0.1
-// @description  Changes in 6.0.1: Radio color fix
+// @version      6.0.2
+// @description  Changes in 6.0.2: Damn, I forgot to re-add 4chan. Fixed.
 // @author       Seianon and Mimorianon and Reisanon
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @namespace    rccom
+// @match        *://boards.4chan.org/*/thread/*
 // @match        *://8chan.moe/*/res/*
 // @match        *://8chan.se/*/res/*
 // @grant        GM_xmlhttpRequest
