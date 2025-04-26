@@ -2,19 +2,30 @@
 // ==UserScript==
 // @name         DVDoom
 // @namespace    http://tampermonkey.net/
-// @version      6.0.2
-// @description  Changes in 6.0.2: Damn, I forgot to re-add 4chan. Fixed.
+// @version      6.0.3
+// @description  Changes in 6.0.3: Catalog redirect for 8chan.
 // @author       Seianon and Mimorianon and Reisanon
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @namespace    rccom
 // @match        *://boards.4chan.org/*/thread/*
-// @match        *://8chan.moe/*/res/*
-// @match        *://8chan.se/*/res/*
+// @match        *://8chan.moe/v/bag
+// @match        *://8chan.moe/v/bag/
+// @match        *://8chan.moe/v/res/*
+// @match        *://8chan.moe/v/catalog.html
+// @match        *://8chan.se/v/bag
+// @match        *://8chan.se/v/bag/
+// @match        *://8chan.se/v/res/*
+// @match        *://8chan.se/v/catalog.html
+// @match        *://8chan.se/v/bag
+// @match        *://8chan.cc/v/bag/
+// @match        *://8chan.cc/v/res/*
+// @match        *://8chan.cc/v/catalog.html
 // @grant        GM_xmlhttpRequest
 // @grant        GM_addElement
 // @grant        GM_addStyle
 // @connect      8chan.moe
 // @connect      8chan.se
+// @connect      8chan.cc
 // @connect      static.wikitide.net
 // @connect      bluearchive.wiki
 // @connect      schaledb.com
@@ -26,6 +37,37 @@
 // @require https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js
 // ==/UserScript==
 (async function () {
+
+    // Redirect 8chan/v/bag to the catalog.
+    if(await (function() {
+        const currentUrl = window.location.href;
+        let domain = null;
+        if (/^https:\/\/8chan\..*?\/v\/bag\/?$/.test(currentUrl)) {
+            const urlObj = new URL(currentUrl);
+            window.open(`https://${urlObj.hostname}/v/catalog.html#bag`, '_self');
+            return true;
+        } else if (/^https:\/\/8chan\..*?\/v\/catalog\.html#bag$/.test(currentUrl)) {
+            function insertSearchValue() {
+                const searchField = document.getElementById('catalogSearchField');
+
+                if (searchField) {
+                    searchField.value = "bag/";
+                    const inputEvent = new Event('input', { bubbles: true });
+                    searchField.dispatchEvent(inputEvent);
+                } else {
+                    setTimeout(insertSearchValue, 500);
+                }
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', insertSearchValue);
+            } else {
+                insertSearchValue();
+            }
+            return true;
+        }
+        return false;
+    })()) return;
 
     // Check for a thread.
     if (!/^bag\/|\/bag\/|Blue Archive|BIue Archive/.test(document?.querySelector('.postInfo.desktop .subject, .opHead .labelSubject')?.textContent?.trim() ?? '')) return;
