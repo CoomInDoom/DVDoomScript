@@ -2,30 +2,29 @@
 // ==UserScript==
 // @name         DVDoom
 // @namespace    http://tampermonkey.net/
-// @version      6.0.3
-// @description  Changes in 6.0.3: Catalog redirect for 8chan.
+// @version      6.0.4
+// @description  Changes in 6.0.4: UI fixes.
 // @author       Seianon and Mimorianon and Reisanon
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @namespace    rccom
 // @match        *://boards.4chan.org/*/thread/*
 // @match        *://8chan.moe/v/bag
 // @match        *://8chan.moe/v/bag/
-// @match        *://8chan.moe/v/res/*
+// @match        *://8chan.moe/*/res/*
 // @match        *://8chan.moe/v/catalog.html
 // @match        *://8chan.se/v/bag
 // @match        *://8chan.se/v/bag/
-// @match        *://8chan.se/v/res/*
+// @match        *://8chan.se/*/res/*
 // @match        *://8chan.se/v/catalog.html
 // @match        *://8chan.se/v/bag
 // @match        *://8chan.cc/v/bag/
-// @match        *://8chan.cc/v/res/*
+// @match        *://8chan.cc/*/res/*
 // @match        *://8chan.cc/v/catalog.html
 // @grant        GM_xmlhttpRequest
 // @grant        GM_addElement
 // @grant        GM_addStyle
 // @connect      8chan.moe
 // @connect      8chan.se
-// @connect      8chan.cc
 // @connect      static.wikitide.net
 // @connect      bluearchive.wiki
 // @connect      schaledb.com
@@ -4562,6 +4561,150 @@
 
         if (typeof GM_info === 'undefined') return;
 
+        const radioStyle = document.createElement('style');
+        radioStyle.textContent = `
+              .video-controls-wrapper * {
+                  margin: 0;
+                  padding: 0;
+                  box-sizing: border-box;
+                  font-family: system-ui, -apple-system, sans-serif;
+              }
+              .video-controls-wrapper {
+                  position: fixed;
+                  bottom: 14px;
+                  left: 50%;
+                  transform: translateX(-50%);
+                  width: 63%;
+                  max-width: 560px;
+                  z-index: 9999;
+                  height: auto;
+                  border-radius: 6px;
+                  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
+                  backdrop-filter: blur(7px);
+                  border: 1px solid transparent;
+              }
+              .controls-container {
+                  width: 100%;
+                  padding: 2px;
+                  position: relative;
+              }
+              .video-title {
+                  font-size: 12px;
+                  margin-bottom: 2px;
+                  padding: 0 3px;
+                  padding-right: 28px;
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+              }
+              .controls {
+                  padding: 2px;
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  border-radius: 4px;
+                  height: 34px;
+              }
+              .controls button {
+                  background: transparent;
+                  border: none;
+                  min-width: 22px;
+                  width: 22px;
+                  height: 22px;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  opacity: 0.9;
+                  transition: opacity 0.2s;
+                  padding: 0;
+                  flex-shrink: 0;
+              }
+              .controls button:hover { opacity: 1; }
+              .control-buttons {
+                  position: absolute;
+                  top: 0;
+                  right: 0;
+                  display: flex;
+                  align-items: center;
+                  gap: 4px;
+                  padding-right: 3px;
+              }
+              .minimize-button, .close-button {
+                  width: 22px;
+                  height: 22px;
+                  opacity: 0.7;
+                  transition: opacity 0.2s;
+                  cursor: pointer;
+                  padding: 3px;
+                  border: none;
+                  background: transparent;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+              }
+              .minimize-button:hover, .close-button:hover { opacity: 1; }
+              .video-title { padding-right: 52px !important; }
+              .progress {
+                  flex: 1;
+                  height: 3px;
+                  border-radius: 1.5px;
+                  position: relative;
+                  min-width: 70px;
+              }
+              .progress-bar {
+                  position: absolute;
+                  left: 0;
+                  top: 0;
+                  height: 100%;
+                  border-radius: 1.5px;
+              }
+              .time {
+                  font-size: 12px;
+                  min-width: 63px;
+                  text-align: center;
+                  flex-shrink: 0;
+              }
+              .volume-control {
+                  display: flex;
+                  align-items: center;
+                  gap: 6px;
+                  position: relative;
+              }
+              .volume-slider {
+                  width: 56px;
+                  height: 3px;
+                  border-radius: 1.5px;
+                  position: relative;
+                  cursor: pointer;
+              }
+              .volume-level {
+                  position: absolute;
+                  left: 0;
+                  top: 0;
+                  height: 100%;
+                  border-radius: 1.5px;
+                  width: 50%;
+                  pointer-events: none;
+              }
+              @media (max-width: 640px) {
+                  .video-controls-wrapper {
+                      bottom: 7px;
+                      width: 66.5%;
+                  }
+                  .volume-slider { width: 42px; }
+                  .controls {
+                      gap: 6px;
+                      padding: 6px;
+                  }
+                  .time {
+                      min-width: 56px;
+                      font-size: 11px;
+                  }
+              }
+          `;
+        document.head.appendChild(radioStyle);
+
         const processAudioResponse = function() {
             if (window.location.hostname === "4chan.org") {
                 return function(response) {
@@ -4919,166 +5062,48 @@
             }
 
             createUI() {
-                const style = document.createElement('style');
-                style.textContent = `
-              .video-controls-wrapper * {
-                  margin: 0;
-                  padding: 0;
-                  box-sizing: border-box;
-                  font-family: system-ui, -apple-system, sans-serif;
-              }
-              .video-controls-wrapper {
-                  position: fixed;
-                  bottom: 14px;
-                  left: 50%;
-                  transform: translateX(-50%);
-                  width: 63%;
-                  max-width: 560px;
-                  z-index: 9999;
-                  height: auto;
-                  border-radius: 6px;
-                  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
-                  backdrop-filter: blur(7px);
-                  border: 1px solid transparent;
-              }
-              .controls-container {
-                  width: 100%;
-                  padding: 2px;
-                  position: relative;
-              }
-              .video-title {
-                  font-size: 12px;
-                  margin-bottom: 2px;
-                  padding: 0 3px;
-                  padding-right: 28px;
-                  white-space: nowrap;
-                  overflow: hidden;
-                  text-overflow: ellipsis;
-              }
-              .controls {
-                  padding: 2px;
-                  display: flex;
-                  align-items: center;
-                  gap: 8px;
-                  border-radius: 4px;
-                  height: 34px;
-              }
-              .controls button {
-                  background: transparent;
-                  border: none;
-                  min-width: 22px;
-                  width: 22px;
-                  height: 22px;
-                  cursor: pointer;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  opacity: 0.9;
-                  transition: opacity 0.2s;
-                  padding: 0;
-                  flex-shrink: 0;
-              }
-              .controls button:hover { opacity: 1; }
-              .control-buttons {
-                  position: absolute;
-                  top: 0;
-                  right: 0;
-                  display: flex;
-                  align-items: center;
-                  gap: 4px;
-                  padding-right: 3px;
-              }
-              .minimize-button, .close-button {
-                  width: 22px;
-                  height: 22px;
-                  opacity: 0.7;
-                  transition: opacity 0.2s;
-                  cursor: pointer;
-                  padding: 3px;
-                  border: none;
-                  background: transparent;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-              }
-              .minimize-button:hover, .close-button:hover { opacity: 1; }
-              .video-title { padding-right: 52px !important; }
-              .progress {
-                  flex: 1;
-                  height: 3px;
-                  border-radius: 1.5px;
-                  position: relative;
-                  min-width: 70px;
-              }
-              .progress-bar {
-                  position: absolute;
-                  left: 0;
-                  top: 0;
-                  height: 100%;
-                  border-radius: 1.5px;
-              }
-              .time {
-                  font-size: 12px;
-                  min-width: 63px;
-                  text-align: center;
-                  flex-shrink: 0;
-              }
-              .volume-control {
-                  display: flex;
-                  align-items: center;
-                  gap: 6px;
-                  position: relative;
-              }
-              .volume-slider {
-                  width: 56px;
-                  height: 3px;
-                  border-radius: 1.5px;
-                  position: relative;
-                  cursor: pointer;
-              }
-              .volume-level {
-                  position: absolute;
-                  left: 0;
-                  top: 0;
-                  height: 100%;
-                  border-radius: 1.5px;
-                  width: 50%;
-                  pointer-events: none;
-              }
-              @media (max-width: 640px) {
-                  .video-controls-wrapper {
-                      bottom: 7px;
-                      width: 66.5%;
-                  }
-                  .volume-slider { width: 42px; }
-                  .controls {
-                      gap: 6px;
-                      padding: 6px;
-                  }
-                  .time {
-                      min-width: 56px;
-                      font-size: 11px;
-                  }
-              }
-          `;
-                document.head.appendChild(style);
-
-                const playerHTML = `<div class="video-controls-wrapper"><div class="controls-container"><h2 class="video-title">Now Playing...</h2>
-              <div class="control-buttons">
-                  <button class="minimize-button" aria-label="Minimize">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <line x1="5" y1="12" x2="19" y2="12"></line>
-                      </svg>
-                  </button>
-                  <button class="close-button" aria-label="Close">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <line x1="18" y1="6" x2="6" y2="18"></line>
-                          <line x1="6" y1="6" x2="18" y2="18"></line>
-                      </svg>
-                  </button>
-              </div>
-              <div class="controls"><button id="playPauseBtn" aria-label="Play"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></button><div class="progress"><div class="progress-bar"></div></div><div class="time">0:00 / 0:00</div><div class="volume-control"><button id="volumeBtn" aria-label="Volume"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg></button><div class="volume-slider" id="volumeSlider"><div class="volume-level" id="volumeLevel"></div></div></div></div></div></div>`;
-
+                const playerHTML = `
+<div class="video-controls-wrapper">
+    <div class="controls-container">
+        <h2 class="video-title">Now Playing...</h2>
+        <div class="control-buttons">
+            <button class="minimize-button" aria-label="Minimize">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+            <button class="close-button" aria-label="Close">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="controls">
+            <button id="playPauseBtn" aria-label="Play">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    ${(this.player.isPlaying) ? '<rect x="6" y="6" width="12" height="12"></rect>' : '<polygon points="5 3 19 12 5 21 5 3"></polygon></svg>'}
+                </svg>
+            </button>
+            <div class="progress">
+                <div class="progress-bar"></div>
+            </div>
+            <div class="time">0:00 / 0:00</div>
+            <div class="volume-control">
+                <button id="volumeBtn" aria-label="Volume">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                    </svg>
+                </button>
+                <div class="volume-slider" id="volumeSlider">
+                    <div class="volume-level" id="volumeLevel"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>`;
                 document.body.insertAdjacentHTML('beforeend', playerHTML);
 
                 this.container = document.querySelector('.video-controls-wrapper');
