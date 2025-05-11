@@ -2,8 +2,8 @@
 // ==UserScript==
 // @name         DVDoom
 // @namespace    http://tampermonkey.net/
-// @version      6.0.5
-// @description  Changes in 6.0.5: Radio fix... again.
+// @version      6.0.4
+// @description  Changes in 6.0.4: Radio fix... again.
 // @author       Seianon and Mimorianon and Reisanon
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @namespace    rccom
