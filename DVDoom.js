@@ -2,8 +2,8 @@
 // ==UserScript==
 // @name         DVDoom
 // @namespace    http://tampermonkey.net/
-// @version      6.0.4
-// @description  Changes in 6.0.4: Radio fix... again.
+// @version      6.0.5
+// @description  Changes in 6.0.5: Radio fix rollback (they undid it, and thus so did I).
 // @author       Seianon and Mimorianon and Reisanon
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @namespace    rccom
@@ -4706,12 +4706,22 @@
         document.head.appendChild(radioStyle);
 
         const processAudioResponse = function() {
-            return function(response) {
-                const blob = new Blob([response.response], {
-                    type: 'audio/ogg'
-                });
-                return URL.createObjectURL(blob);
-            };
+            if (window.location.hostname === "4chan.org") {
+                return function(response) {
+                    const blob = new Blob([response.response], {
+                        type: 'audio/ogg'
+                    });
+                    return URL.createObjectURL(blob);
+                };
+            } else {
+                return function(response) {
+                    const binary = Array.from(new Uint8Array(response.response))
+                        .map(byte => String.fromCharCode(byte))
+                        .join('');
+                    const base64 = btoa(binary);
+                    return `data:audio/ogg;base64,${base64}`;
+                };
+            }
         }();
 
         const outerStyle = document.createElement('style');
