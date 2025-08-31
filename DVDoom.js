@@ -2,8 +2,8 @@
 // ==UserScript==
 // @name         DVDoom
 // @namespace    http://tampermonkey.net/
-// @version      6.0.5
-// @description  Changes in 6.0.5: Radio fix rollback (they undid it, and thus so did I).
+// @version      6.0.6
+// @description  Changes in 6.0.6: Radio fix rollback'd the rollback of the rollback of the rollback.
 // @author       Seianon and Mimorianon and Reisanon
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @namespace    rccom
@@ -4715,11 +4715,17 @@
                 };
             } else {
                 return function(response) {
+                    /*
                     const binary = Array.from(new Uint8Array(response.response))
                         .map(byte => String.fromCharCode(byte))
                         .join('');
                     const base64 = btoa(binary);
                     return `data:audio/ogg;base64,${base64}`;
+                    */
+                    const blob = new Blob([response.response], {
+                        type: 'audio/ogg'
+                    });
+                    return URL.createObjectURL(blob);
                 };
             }
         }();
